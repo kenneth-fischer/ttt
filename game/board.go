@@ -17,8 +17,7 @@ type Board struct {
 	dimension int
 	contents  string
 	moves     []int
-	winner    string
-	isForfeit   bool
+	forfeited string
 	rows      []SetOfSpaces
 	cols      []SetOfSpaces
 	lrdiag    SetOfSpaces
@@ -121,22 +120,34 @@ func (b Board) IsEmpty(index int) bool {
 }
 
 func (b Board) IsForfeit() bool {
-	return b.isForfeit
+	if b.forfeited == "" {
+		return false
+	}
+	return true
 }
 
 func (b Board) IsGameOver() bool {
-	if b.winner != "" {
+	if b.Winner() != "" {
 		return true
 	}
 
-	if len(b.moves) == b.Spaces() {
+	if b.IsTie() {
 		return true
 	}
 	return false
 }
 
 func (b Board) IsTie() bool {
-	return b.IsGameOver() && b.Winner() == ""
+	if b.IsForfeit() {
+		return false
+	}
+
+	for _, set := range b.Sets() {
+		if !set.IsBlocked() {
+			return false
+		}
+	}
+	return true
 }
 
 func (b Board) LastMove() int {
@@ -163,7 +174,6 @@ func (b *Board) Mark(index int) error {
 	
 	updated := string(orig[:index]) + b.CurrentPlayer() + string(orig[index+1:])
 	b.contents  = updated
-	b.checkWinner()
 	b.moves = append(b.moves, index)
 	return nil
 }
@@ -203,7 +213,23 @@ func (b Board) Status() string {
 }
 
 func (b Board) Winner() string {
-	return b.winner
+	if b.forfeited != "" {
+		if b.forfeited == marks[0] {
+			return marks[1]
+		} else {
+			return marks[0]
+		}
+	}
+
+	for _, set := range b.Sets() {
+		if set.CompletedBy(marks[0]) {
+			return marks[0]
+		}
+		if set.CompletedBy(marks[1]) {
+			return marks[1]
+		}
+	}
+	return ""
 }
 
 func (b *Board) Undo() {
@@ -218,27 +244,8 @@ func (b *Board) Undo() {
 	b.moves = b.moves[:len(b.moves)-1]
 }
 
-func (b *Board) checkWinner() bool {
-	if len(b.moves) < 4 {
-		return false
-	}
-
-	for _, set := range b.Sets() {
-		if set.CompletedBy(b.CurrentPlayer()) {
-			b.winner = b.CurrentPlayer()
-			return true
-		}
-	}
-	return false
-}
-
 func (b *Board) forfeit() {
-	if b.CurrentPlayer() == marks[0] {
-		b.winner = marks[1]
-		return
-	}
-	b.isForfeit = true
-	b.winner = marks[0]
+	b.forfeited = b.CurrentPlayer()
 }
 
 func getRow(index int, b *Board) SetOfSpaces {
