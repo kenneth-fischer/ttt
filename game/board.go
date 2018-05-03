@@ -138,6 +138,10 @@ func (b Board) IsGameOver() bool {
 }
 
 func (b Board) IsTie() bool {
+	if b.IsForfeit() {
+		return false
+	}
+
 	for _, set := range b.Sets() {
 		if !set.IsBlocked() {
 			return false
