@@ -32,8 +32,8 @@ func (p WinBlockPos) NextMove(b game.Board) game.Move {
 
 func (p WinBlockPos) getWinningMove(b game.Board) int {
 	for _, set := range b.Sets() {
-		if set.CanCompleteWith(1, b.CurrentPlayer()) {
-			winner := set.EmptySpaces()[0]
+		if set.CanCompleteWith(1, b.CurrentPlayer(), b) {
+			winner := set.EmptySpaces(b)[0]
 			return winner
 		}
 	}
@@ -42,8 +42,8 @@ func (p WinBlockPos) getWinningMove(b game.Board) int {
 
 func (p WinBlockPos) getBlockingMove(b game.Board) int {
 	for _, set := range b.Sets() {
-		if set.CanCompleteWith(1, b.Opponent()) {
-			blocker := set.EmptySpaces()[0]
+		if set.CanCompleteWith(1, b.Opponent(), b) {
+			blocker := set.EmptySpaces(b)[0]
 			return blocker
 		}
 	}
@@ -68,8 +68,8 @@ func (p WinBlockPos) pickBestSpace(b game.Board) int {
 func (p WinBlockPos) scoreMove(move int, b game.Board) int {
 	score := 0
 	for _, set := range b.Sets() {
-		if set.Contains(move) && !set.IsBlocked() {
-			score += set.Count("x") + set.Count("o")
+		if set.Contains(move) && !set.IsBlocked(b) {
+			score += set.Count("x", b) + set.Count("o", b)
 		}
 	}
 	return score

@@ -32,8 +32,8 @@ func (p WinBlocker) NextMove(b game.Board) game.Move {
 
 func (p WinBlocker) getWinningMove(b game.Board) int {
 	for _, set := range b.Sets() {
-		if set.CanCompleteWith(1, b.CurrentPlayer()) {
-			winner := set.EmptySpaces()[0]
+		if set.CanCompleteWith(1, b.CurrentPlayer(), b) {
+			winner := set.EmptySpaces(b)[0]
 			//fmt.Printf("Pick winner: %d\n", winner)
 			return winner
 		}
@@ -43,8 +43,8 @@ func (p WinBlocker) getWinningMove(b game.Board) int {
 
 func (p WinBlocker) getBlockingMove(b game.Board) int {
 	for _, set := range b.Sets() {
-		if set.CanCompleteWith(1, b.Opponent()) {
-			blocker := set.EmptySpaces()[0]
+		if set.CanCompleteWith(1, b.Opponent(), b) {
+			blocker := set.EmptySpaces(b)[0]
 			//fmt.Printf("Pick blocker: %d\n", blocker)
 			return blocker
 		}

@@ -1,52 +1,68 @@
 package game
 
 import (
-	"strings"
+	"fmt"
 )
 
-func replaceEach(text, target string, patterns ... string) []string {
-	results := []string{}
-
-	for _, pattern := range patterns {
-		result := text
-
-		for i := 0; i < len(pattern); i++ {
-			replacement := string(pattern[i])
-			result = strings.Replace(result, target, replacement, 1) 
-		}
-
-		results = append(results, result)
+func getSets(b *Board) []SetOfSpaces {
+        sets := []SetOfSpaces{}
+	for i := 0; i < b.dimension; i++ {
+                sets = append(sets, getRow(i, b))
 	}
-	return results
+	for i := 0; i < b.dimension; i++ {
+		sets = append(sets, getCol(i, b))
+	}
+	sets = append(sets, getLRDiag(b))
+	sets = append(sets, getRLDiag(b))
+	return sets
+}
+	
+func getRow(index int, b *Board) SetOfSpaces {
+	indices := []int{}
+	for row := 0; row < b.dimension; row++ {
+		for col := 0; col < b.dimension; col++ {
+			if row == index {
+				indices = append(indices, (row * b.dimension) + col)
+			}
+		}
+	}
+	name := fmt.Sprintf("Row %d", index)
+	return NewSetOfSpaces(name, indices)
 }
 
-func Combine(s1 string, occurrences1 int, s2 string, occurrences2 int) []string {
-	results := []string{}
-
-	if occurrences1 < 0 || occurrences2 < 0 || occurrences1 + occurrences2 == 0 {
-		return results
+func getCol(index int, b *Board) SetOfSpaces {
+	indices := []int{}
+	for row := 0; row < b.dimension; row++ {
+		for col := 0; col < b.dimension; col++ {
+			if col == index {
+				indices = append(indices, (row * b.dimension) + col)
+			}
+		}
 	}
+	name := fmt.Sprintf("Col %d", index)
+	return NewSetOfSpaces(name, indices)
+}
 
-	if occurrences1 == 0 {
-		result := strings.Repeat(s2, occurrences2)
-		results = append(results, result)
-		return results
+func getLRDiag(b *Board) SetOfSpaces {
+	indices := []int{}
+	for row := 0; row < b.dimension; row++ {
+		for col := 0; col < b.dimension; col++ {
+			if row == col {
+				indices = append(indices, (row * b.dimension) + col)
+			}
+		}
 	}
+	return NewSetOfSpaces("L->R Diag", indices)
+}
 
-	if occurrences2 == 0 {
-		result := strings.Repeat(s1, occurrences1)
-		results = append(results, result)
-		return results
+func getRLDiag(b *Board) SetOfSpaces {
+	indices := []int{}
+	for row := 0; row < b.dimension; row++ {
+		for col := 0; col < b.dimension; col++ {
+			if row+col == b.dimension-1 {
+				indices = append(indices, (row * b.dimension) + col)
+			}
+		}
 	}
-
-        for _, partial := range Combine(s1, occurrences1-1, s2, occurrences2) {
-		result := s1 + partial
-		results = append(results, result)
-	}
-
-	for _, partial := range Combine(s1, occurrences1, s2, occurrences2-1) {
-		result := s2 + partial
-		results = append(results, result)
-	}
-	return results
+	return NewSetOfSpaces("R->L Diag", indices)
 }

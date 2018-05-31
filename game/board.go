@@ -14,28 +14,18 @@ const (
 )
 
 type Board struct {
-	dimension int
-	contents  string
-	moves     []int
-	winner    string
-	isForfeit   bool
-	rows      []SetOfSpaces
-	cols      []SetOfSpaces
-	lrdiag    SetOfSpaces
-	rldiag    SetOfSpaces
+	dimension  int
+	contents   string
+	moves      []int
+	winner     string
+	isForfeit  bool
+        sets       []SetOfSpaces
 }
 
 func NewBoard(dimension int) *Board {
-	b := Board{ dimension : dimension }
-	for i := 0; i < dimension; i++ {
-		b.rows = append(b.rows, getRow(i, &b))
-	}
-	for i := 0; i < dimension; i++ {
-		b.cols = append(b.cols, getCol(i, &b))
-	}
-	b.lrdiag = getLRDiag(&b)
-	b.rldiag = getRLDiag(&b)
-	return &b
+	b := &Board{ dimension : dimension }
+        b.sets = getSets(b)
+	return b
 }
 
 func (b Board) Contents() string {
@@ -58,22 +48,6 @@ func (b Board) ContentsOf(index int) string {
 	return  string(b.contents[index])
 }
 
-func (b Board) Rows() []SetOfSpaces {
-	return b.rows
-}
-
-func (b Board) Cols() []SetOfSpaces {
-	return b.cols
-}
-
-func (b Board) LRDiag() SetOfSpaces {
-	return b.lrdiag
-}
-
-func (b Board) RLDiag() SetOfSpaces {
-	return b.rldiag
-}
-
 func (b Board) EmptySpaces() []int {
 	results := []int{}
 
@@ -86,11 +60,7 @@ func (b Board) EmptySpaces() []int {
 }
  
 func (b Board) Sets() []SetOfSpaces {
-	sets :=[]SetOfSpaces{}
-	sets = append(sets, b.rows...)
-	sets = append(sets, b.cols...)
-	sets = append(sets, b.lrdiag, b.rldiag)
-	return sets
+        return b.sets
 }
 
 // Opponent returns the mark of the player who is not the current player
@@ -224,7 +194,7 @@ func (b *Board) checkWinner() bool {
 	}
 
 	for _, set := range b.Sets() {
-		if set.CompletedBy(b.CurrentPlayer()) {
+		if set.CompletedBy(b.CurrentPlayer(), *b) {
 			b.winner = b.CurrentPlayer()
 			return true
 		}
@@ -239,54 +209,4 @@ func (b *Board) forfeit() {
 	}
 	b.isForfeit = true
 	b.winner = marks[0]
-}
-
-func getRow(index int, b *Board) SetOfSpaces {
-	indices := []int{}
-	for row := 0; row < b.dimension; row++ {
-		for col := 0; col < b.dimension; col++ {
-			if row == index {
-				indices = append(indices, (row * b.dimension) + col)
-			}
-		}
-	}
-	name := fmt.Sprintf("Row %d", index)
-	return NewSetOfSpaces(b, name, indices)
-}
-
-func getCol(index int, b *Board) SetOfSpaces {
-	indices := []int{}
-	for row := 0; row < b.dimension; row++ {
-		for col := 0; col < b.dimension; col++ {
-			if col == index {
-				indices = append(indices, (row * b.dimension) + col)
-			}
-		}
-	}
-	name := fmt.Sprintf("Col %d", index)
-	return NewSetOfSpaces(b, name, indices)
-}
-
-func getLRDiag(b *Board) SetOfSpaces {
-	indices := []int{}
-	for row := 0; row < b.dimension; row++ {
-		for col := 0; col < b.dimension; col++ {
-			if row == col {
-				indices = append(indices, (row * b.dimension) + col)
-			}
-		}
-	}
-	return NewSetOfSpaces(b, "L->R Diag", indices)
-}
-
-func getRLDiag(b *Board) SetOfSpaces {
-	indices := []int{}
-	for row := 0; row < b.dimension; row++ {
-		for col := 0; col < b.dimension; col++ {
-			if row+col == b.dimension-1 {
-				indices = append(indices, (row * b.dimension) + col)
-			}
-		}
-	}
-	return NewSetOfSpaces(b, "R->L Diag", indices)
 }
