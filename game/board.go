@@ -19,12 +19,12 @@ type Board struct {
 	moves      []int
 	winner     string
 	isForfeit  bool
-        sets       []SetOfSpaces
+	sets       []SetOfSpaces
 }
 
 func NewBoard(dimension int) *Board {
 	b := &Board{ dimension : dimension }
-        b.sets = getSets(b)
+	b.sets = getSets(b)
 	return b
 }
 
@@ -60,7 +60,7 @@ func (b Board) EmptySpaces() []int {
 }
  
 func (b Board) Sets() []SetOfSpaces {
-        return b.sets
+	return b.sets
 }
 
 // Opponent returns the mark of the player who is not the current player
