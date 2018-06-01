@@ -12,13 +12,17 @@ type SetOfSpaces struct {
 }
 
 // NewSetOfSpaces creates a new set of spaces.
-func NewSetOfSpaces(name string, indices []int) SetOfSpaces {
-	return SetOfSpaces{ name : name, indices : indices }
+func NewSetOfSpaces(name string) SetOfSpaces {
+	return SetOfSpaces{ name : name}
 }
 
 // Name returns a description name for the set of spaces
 func (s SetOfSpaces) Name() string {
 	return s.name
+}
+
+func (s *SetOfSpaces) Add(indices ...int) {
+	s.indices = append(s.indices, indices...)
 }
 
 // EmptySpaces returns the index of each unoccupied space in the given set of spaces

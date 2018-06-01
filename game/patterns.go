@@ -27,7 +27,9 @@ func getRow(index int, b *Board) SetOfSpaces {
 		}
 	}
 	name := fmt.Sprintf("Row %d", index)
-	return NewSetOfSpaces(name, indices)
+	result :=  NewSetOfSpaces(name)
+	result.Add(indices...)
+	return result
 }
 
 func getCol(index int, b *Board) SetOfSpaces {
@@ -40,7 +42,9 @@ func getCol(index int, b *Board) SetOfSpaces {
 		}
 	}
 	name := fmt.Sprintf("Col %d", index)
-	return NewSetOfSpaces(name, indices)
+	result := NewSetOfSpaces(name)
+	result.Add(indices...)
+	return result
 }
 
 func getLRDiag(b *Board) SetOfSpaces {
@@ -52,7 +56,9 @@ func getLRDiag(b *Board) SetOfSpaces {
 			}
 		}
 	}
-	return NewSetOfSpaces("L->R Diag", indices)
+	result := NewSetOfSpaces("L->R Diag")
+	result.Add(indices...)
+	return result
 }
 
 func getRLDiag(b *Board) SetOfSpaces {
@@ -64,5 +70,7 @@ func getRLDiag(b *Board) SetOfSpaces {
 			}
 		}
 	}
-	return NewSetOfSpaces("R->L Diag", indices)
+	result :=  NewSetOfSpaces("R->L Diag")
+	result.Add(indices...)
+	return result
 }
